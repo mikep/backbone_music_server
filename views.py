@@ -18,12 +18,13 @@ from django.utils.translation import ugettext as _, activate
 log = logging.getLogger(__name__)
 
 BASE_PATH = settings.MUSIC_APP_ROOT
+PATH_LEN = len(BASE_PATH)
 
 def song_info(request, song=None):
     """ Read id3 tags """
 
     a = {}
-    song = os.path.join(BASE_PATH, _decode(song)[8:])
+    song = os.path.join(BASE_PATH, _decode(song))
 
     log.warn(song)
     log.warn(os.path.exists(song))
@@ -41,11 +42,12 @@ def song_info(request, song=None):
     image = glob.glob(d)
 
     if image:
-        image = image[0][8:]
+        image = image[0][PATH_LEN:]
+        log.warn(image)
         if not image.startswith('/'):
             image = "/" + image
     else:
-        image = "/static/album.jpg"
+        image = "/album.jpg"
 
     y = dict(zip(a.keys(), a.values()))
 
@@ -62,7 +64,7 @@ def ajax_file_view(request, dir=None):
     if dir:
         dir = _decode(dir)
     else:
-        dir = os.path.join(BASE_PATH, 'static', 'music')
+        dir = os.path.join(BASE_PATH, 'music')
 
     r = []
 
@@ -112,7 +114,7 @@ def ajax_playlist_view(request, pl_file=None):
             })
 
     else:
-        search_path = os.path.join('/', BASE_PATH, 'static', 'music')
+        search_path = os.path.join(BASE_PATH, 'music')
         playlists = []
         playlists = pl_list_gen(playlists, search_path)
 
@@ -161,7 +163,7 @@ def file_list_gen(r, d, recursive=1):
                     r.append({
                         'type': 'directory',
                         'id': _encode(ff),
-                        'path': ff,
+                        'path': ff[PATH_LEN:],
                         'name': f
                     })
                     if recursive:
@@ -183,7 +185,7 @@ def file_list_gen(r, d, recursive=1):
                         r.append({
                             'type': 'file',
                             'id': _encode(ff),
-                            'path': ff,
+                            'path': ff[PATH_LEN:],
                             'name': f,
                             })
     except Exception, e:

@@ -11,7 +11,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-MUSIC_APP_ROOT = os.path.join('srv','www')
+MUSIC_APP_ROOT = os.path.join(os.getcwd(), 'static')
 
 TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en-us'
