@@ -3,9 +3,9 @@ backbone_music_server
 
 Backend for streaming HTML5 Media player client using backbone.js
 
-Sample Nginx config
-===================
 
+Sample Nginx config
+-------------------
                                                                                                                                                                           126,1         Bot
     server {
         listen 8080;
@@ -41,9 +41,9 @@ Sample Nginx config
 
         }
 
-        location ~ / {
+        location / {
 
-            root /srv/ww1/static;
+            root /srv/ww1/static/;
             autoindex on; 
             allow all;
             expires epoch;
@@ -51,3 +51,18 @@ Sample Nginx config
         }
 
     }   
+
+Install Instructions:
+---------------------
+
+1. `git clone https://github.com/mikep/backbone_music_server.git`
+2. `git submodule init`
+3. `git submodule update`
+4. copy recommeneded nginx config to nginx.conf
+5. configure nginx
+  - server root on line 37 of recommeneded nginx config
+  - optional change port on line 2
+6. Create symlink called music under <repodir>/static/
+  - Ex. `ln -s /srv/www/static/music /volumes/media/music`
+7. Start django app `sudo /srv/www/run.sh start`
+8. restart nginx
