@@ -103,14 +103,18 @@ def ajax_playlist_view(request, pl_file=None):
         x = f.readlines()
         f.close()
 
+        count = 0
+
         for fl in x:
             if fl.startswith('#') or fl == "" or fl == "\n":
                 continue
+            count += 1
             fp = os.path.join(d, fl)
             fp = fp.rstrip('\r\n')
             r['files'].append({
-                'song_path': fp[9:],
-                'b': _encode(fp),
+                'song_path': fp[PATH_LEN:],
+                'id': _encode(fp),
+                'track_number': count
             })
 
     else:
