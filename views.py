@@ -112,7 +112,7 @@ def ajax_playlist_view(request, pl_file=None):
             fp = os.path.join(d, fl)
             fp = fp.rstrip('\r\n')
             r['files'].append({
-                'song_path': fp[PATH_LEN:],
+                'path': fp[PATH_LEN:],
                 'id': _encode(fp),
                 'track_number': count
             })
