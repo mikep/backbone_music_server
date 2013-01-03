@@ -183,7 +183,7 @@ def file_list_gen(r, d, recursive=1):
                             '.wav',
                             '.m4a'
                     ]
-                    if filter(f.endswith, file_extensions):
+                    if filter(f.lower().endswith, file_extensions):
                         # get .ext and remove dot
                         e = os.path.splitext(f)[1][1:]
                         r.append({
