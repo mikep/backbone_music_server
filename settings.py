@@ -9,6 +9,13 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (
 )
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'media.db',
+    }
+}
+
 MANAGERS = ADMINS
 
 MUSIC_APP_ROOT = os.path.join(os.getcwd(), 'static')
@@ -30,6 +37,9 @@ INSTALLED_APPS = (
 )
 
 LOG_FILENAME = "/var/log/nginx/music.log"
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
 
 if not os.path.exists(LOG_FILENAME):
     try:

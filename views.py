@@ -8,18 +8,22 @@ import re
 import settings
 import urllib
 
-from django.views.decorators.cache import cache_page
+#from django.views.decorators.cache import cache_page
 from django.http import (HttpResponseRedirect,
                         HttpResponseServerError,
                         HttpResponse)
 from django.template import Context, loader
 from django.utils.translation import ugettext as _, activate
+from django.views.decorators.csrf import csrf_exempt
+
+from decorators import is_authorized
 
 log = logging.getLogger(__name__)
 
 BASE_PATH = settings.MUSIC_APP_ROOT
 PATH_LEN = len(BASE_PATH)
 
+@is_authorized()
 def song_info(request, song=None):
     """ Read id3 tags """
 
@@ -59,6 +63,7 @@ def song_info(request, song=None):
 
 
 #@cache_page(60 * 15)
+@is_authorized()
 def ajax_file_view(request, dir=None):
 
     if dir:
@@ -78,7 +83,8 @@ def ajax_file_view(request, dir=None):
     }))
 
 
-@cache_page(60 * 15)
+#@cache_page(60 * 15)
+@is_authorized()
 def ajax_playlist_view(request, pl_file=None):
     ### Im not sure how this should work
 
@@ -199,6 +205,36 @@ def file_list_gen(r, d, recursive=1):
     log.info("finishing file_list_gen()")
     return r
 
+@csrf_exempt
+def login(request):
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    if (request.POST.get('email', '') == "michael.pucyk@gmail.com" and
+        request.POST.get('password', '') == "password1"):
+        user = {
+            'email': request.POST.get('email'),
+            'name': "Michael Pucyk",
+            'role': 'user'
+        }
+
+        request.session['user'] = json.dumps(user)
+
+        return HttpResponse(json.dumps(user))
+    else:
+        return HttpResponse(
+            json.dumps({'error': 'Invalid username and password combination.'}),
+            status=403
+        )
+
+@csrf_exempt
+@is_authorized()
+def logout(request):
+    try:
+        del request.session['user']
+        return HttpResponse(json.dumps({}))
+    except KeyError:
+        return HttpResponseServerError(json.dumps({'error': 'Couldn\'t log out.'}))
 
 # _encode and _decode are helpers to remove padding chars from base64 encoded
 # strings because jquery doesn't like having '=' in selectors.
