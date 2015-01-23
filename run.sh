@@ -12,7 +12,7 @@ STOP_TIMEOUT=3
 . /lib/lsb/init-functions
 
 start_daemon () {
-    python manage.py runfcgi method=threaded host=127.0.0.1 port=9002
+    ./venv/bin/python manage.py runfcgi method=threaded host=127.0.0.1 port=9002
 }
 
 stop_daemon () {

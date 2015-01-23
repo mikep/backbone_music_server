@@ -58,7 +58,7 @@ def song_info(request, song=None):
     return HttpResponse(json.dumps(y))
 
 
-#@cache_page(60 * 15)
+@cache_page(60 * 15)
 def ajax_file_view(request, dir=None):
 
     if dir:
@@ -163,12 +163,34 @@ def file_list_gen(r, d, recursive=1):
                 and not f.endswith('.txt')
                 and not f.endswith('.JPG')):
 
+                log.info('*'*30)
+                log.info(ff)
+                log.info('*'*30)
                 if os.path.isdir(ff):
+                    da = ff
+                    da += "/*.jpg"
+
+                    # glob doesn't like some chars, so replace with ?
+                    restricted_char = r'[][]'
+                    da = re.sub(restricted_char, '?', da)
+
+                    image = glob.glob(da)
+                    log.warn('image search: {0}'.format(da))
+                    if image:
+                        image = image[0][PATH_LEN:]
+                        log.warn(image)
+                        if not image.startswith('/'):
+                            image = "/" + image
+                    else:
+                        image = "/album.jpg"
+
                     r.append({
                         'type': 'directory',
                         'id': _encode(ff),
                         'path': ff[PATH_LEN:],
-                        'name': f
+                        'name': f,
+                        'mtime': int(os.path.getmtime(ff)),
+                        'image': image,
                     })
                     if recursive:
                         log.info("Recursing to - " + str(ff))
@@ -191,6 +213,7 @@ def file_list_gen(r, d, recursive=1):
                             'id': _encode(ff),
                             'path': ff[PATH_LEN:],
                             'name': f,
+                            'mtime': int(os.path.getmtime(ff)),
                             })
     except Exception, e:
         log.error(str(e))
